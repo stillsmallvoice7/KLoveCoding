@@ -1,0 +1,40 @@
+﻿@model List<KLoveCoding.Service.Dtos.FavoriteDto>
+@{
+    var favorite = Model.FirstOrDefault();
+    ViewData["Title"] = "Favorites";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header"></section>
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">Favorites</h3>                    
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped searchable-table">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => favorite.VerseText)</th>
+                                <th>@Html.DisplayNameFor(model => favorite.ImageLink)</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.VerseText)</td>
+                                <td>
+                                    <img src="@item.ImageLink" width="300px" />
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

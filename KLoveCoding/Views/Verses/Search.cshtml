@@ -1,0 +1,141 @@
+﻿@model KLoveCoding.ViewModels.SearchViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">Verses</h1>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Verse Search</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-remove"></i></button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                
+                <form asp-action="Search" method="get">
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 form-group">
+                                    <label asp-for="NumberOfVerses"></label>
+                                    <input asp-for="NumberOfVerses" class="form-control" />
+                                    <span asp-validation-for="NumberOfVerses" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <label asp-for="StartDate"></label>
+                                    <input asp-for="StartDate" type="date" class="form-control" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <br />
+                                    <input class="btn btn-primary" value="Search" type="submit" />
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+                <!-- /.row -->
+            </div>
+
+            @if (Model != null && Model.VerseResultRootDto != null)
+            {
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered table-striped searchable-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.VerseResultRootDto.Verses.FirstOrDefault().VerseText)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.VerseResultRootDto.Verses.FirstOrDefault().ImageLink)
+                                        </th>
+                                        <th>
+                                            Favorite
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.VerseResultRootDto.Verses)
+                                    {
+                                        <tr>
+                                            <td>                                                
+                                                @Html.DisplayFor(modelItem => item.VerseText)
+                                            </td>
+                                            <td>
+                                                <img src="@item.ImageLink" width="300px" />
+                                                <input id="hfVerseApiId" name="hfVerseApiId" type="hidden" value="@item.Id" />
+                                            </td>
+                                            <td>
+                                                <input type="button" class="btn btn-default favorite" value="Favorite" />                                                 
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- /.card -->
+
+    </div>
+</section>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            
+            $(".favorite").on('click', function () {
+
+                var tr = $(this).closest('tr');
+
+                var verseTextData = tr.find('td:eq(0)').html().trim();
+                var imageLinkData = tr.find('td:eq(1) img').attr('src');
+                var verseApiIdData = tr.find('td:eq(1) #hfVerseApiId').val();
+                var favoriteButton = tr.find('td:eq(2) input');
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "Favorites")",
+                    data: { imageLink: imageLinkData, verseText: verseTextData, verseApiId: verseApiIdData },
+                    dataType: "text",
+                    success: function (msg) {
+                    
+                        favoriteButton.prop("value", "Favorited!");
+                        favoriteButton.css('background', 'green');
+                        favoriteButton.css('color', 'white');
+                    },
+                    error: function (req, status, error) {
+                        alert('Houston, we have a');
+                        console.log(msg);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
